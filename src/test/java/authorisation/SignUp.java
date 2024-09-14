@@ -1,12 +1,20 @@
 package authorisation;
 
 import com.github.javafaker.Faker;
+import enums.USER;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import utilities.MyFaker;
+import utilities.MyResponse;
+import utilities.Role;
+import utilities.Utils;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 
@@ -18,8 +26,8 @@ public class SignUp {
         String emailAddress = faker.internet().emailAddress();
         String password = faker.internet().password(8, 10, true, true, true);
         Response response;
-        RestAssured.basePath="/api";
-        RestAssured.baseURI="http://localhost:3000";
+        RestAssured.basePath = "/api";
+        RestAssured.baseURI = "http://localhost:3000";
         response = given()
                 .contentType(ContentType.JSON)
                 .body("{\n" +
@@ -48,4 +56,89 @@ public class SignUp {
         Assert.assertNotEquals(password, responsePassword);
         Assert.assertEquals(statusCode, 200);
     }
+
+    @Test
+    public void testSignUpNegative() {
+        MyFaker myFaker = new MyFaker();
+        MyResponse response = new MyResponse();
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("username", myFaker.getUsername());
+        map.put("email", myFaker.getEmail());
+        map.put("password", myFaker.getPassword());
+        map.put("firstName", myFaker.getFirstName());
+        map.put("lastName", myFaker.getLastname());
+        map.put("role", "teacher");
+        response.myResponse = given()
+                .spec(response.getMyRequestSpecification())
+
+                .body(map)
+                .when()
+                .post("/signup");
+
+        JsonPath jsonPath = response.myResponse.jsonPath();
+
+        boolean aBoolean = jsonPath.getBoolean("data.user.approved");
+        boolean status = jsonPath.getBoolean("status");
+        int id = jsonPath.getInt("data.user.id");
+        String responseUserName = jsonPath.getString("data.user.username");
+        String responsePassword = jsonPath.getString("data.user.password");
+        int statusCode = response.myResponse.statusCode();
+
+        Assert.assertFalse(aBoolean);
+        Assert.assertTrue(status);
+        Assert.assertEquals(myFaker.getUsername(), responseUserName);
+        Assert.assertNotEquals(myFaker.getPassword(), responsePassword);
+        Assert.assertEquals(statusCode, 200);
+    }
+
+    @Test
+    public void testSignUpNegative2() {
+        MyResponse response = new MyResponse();
+        USER user = new USER(Role.TEACHER);
+
+        response.myResponse = given()
+                .spec(response.getMyRequestSpecification())
+                .body(user)
+                .when()
+                .post("/signup");
+
+        JsonPath jsonPath = response.myResponse.jsonPath();
+
+        boolean aBoolean = jsonPath.getBoolean("data.user.approved");
+        boolean status = jsonPath.getBoolean("status");
+        int id = jsonPath.getInt("data.user.id");
+        String responseUserName = jsonPath.getString("data.user.username");
+        String responsePassword = jsonPath.getString("data.user.password");
+        int statusCode = response.myResponse.statusCode();
+
+        Assert.assertFalse(aBoolean);
+        Assert.assertTrue(status);
+        Assert.assertEquals(user.username(), responseUserName);
+        Assert.assertNotEquals(user.password(), responsePassword);
+        Assert.assertEquals(statusCode, 200);
+    }
+
+    @Test
+    public void testSignUpNegative3() {
+        USER user = new USER(Role.TEACHER);
+
+        MyResponse response = Utils.createUser(user);
+
+        JsonPath jsonPath = response.myResponse.jsonPath();
+
+        boolean aBoolean = jsonPath.getBoolean("data.user.approved");
+        boolean status = jsonPath.getBoolean("status");
+        int id = jsonPath.getInt("data.user.id");
+        String responseUserName = jsonPath.getString("data.user.username");
+        String responsePassword = jsonPath.getString("data.user.password");
+        int statusCode = response.myResponse.statusCode();
+
+        Assert.assertFalse(aBoolean);
+        Assert.assertTrue(status);
+        Assert.assertEquals(user.username(), responseUserName);
+        Assert.assertNotEquals(user.password(), responsePassword);
+        Assert.assertEquals(statusCode, 200);
+    }
+
 }
