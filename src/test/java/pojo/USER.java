@@ -1,7 +1,7 @@
-package enums;
+package pojo;
 
 import utilities.MyFaker;
-import utilities.Role;
+import utilities.ROLE;
 
 public class USER {
     private String username;
@@ -11,7 +11,7 @@ public class USER {
     private String lastName;
     private String role;
 
-    public USER(Role role) {
+    public USER(ROLE role) {
         MyFaker myFaker= new MyFaker();
         this.username = myFaker.getUsername();
         this.email = myFaker.getEmail();

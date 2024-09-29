@@ -20,8 +20,6 @@ public class MyResponse {
         requestSpecification = requestSpecBuilder.build();
     }
 
-
-
     public RequestSpecification getMyRequestSpecification() {
         return requestSpecification;
     }

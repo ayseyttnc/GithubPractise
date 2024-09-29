@@ -1,6 +1,7 @@
 package utilities;
 
-public enum Role {
+public enum ROLE {
+    SUPERADMIN,
     ADMIN,
     TEACHER,
     STUDENT

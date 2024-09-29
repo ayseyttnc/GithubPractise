@@ -1,7 +1,7 @@
 package authorisation;
 
 import com.github.javafaker.Faker;
-import enums.USER;
+import pojo.USER;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
@@ -10,7 +10,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import utilities.MyFaker;
 import utilities.MyResponse;
-import utilities.Role;
+import utilities.ROLE;
 import utilities.Utils;
 
 import java.util.HashMap;
@@ -69,6 +69,7 @@ public class SignUp {
         map.put("firstName", myFaker.getFirstName());
         map.put("lastName", myFaker.getLastname());
         map.put("role", "teacher");
+
         response.myResponse = given()
                 .spec(response.getMyRequestSpecification())
 
@@ -95,7 +96,7 @@ public class SignUp {
     @Test
     public void testSignUpNegative2() {
         MyResponse response = new MyResponse();
-        USER user = new USER(Role.TEACHER);
+        USER user = new USER(ROLE.TEACHER);
 
         response.myResponse = given()
                 .spec(response.getMyRequestSpecification())
@@ -121,7 +122,7 @@ public class SignUp {
 
     @Test
     public void testSignUpNegative3() {
-        USER user = new USER(Role.TEACHER);
+        USER user = new USER(ROLE.TEACHER);
 
         MyResponse response = Utils.createUser(user);
 
@@ -141,4 +142,15 @@ public class SignUp {
         Assert.assertEquals(statusCode, 200);
     }
 
+    @Test
+    public void testName() {
+        USER user=new USER(ROLE.STUDENT);
+
+        MyResponse user1 = Utils.createUser(user);
+        user1.myResponse.prettyPrint();
+
+        MyResponse user2 = Utils.createUser(user);
+        user2.myResponse.prettyPrint();
+
+    }
 }

@@ -1,8 +1,6 @@
 package utilities;
 
-import enums.USER;
-import io.restassured.path.json.JsonPath;
-import io.restassured.response.Response;
+import pojo.USER;
 
 import static io.restassured.RestAssured.given;
 
